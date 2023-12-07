@@ -37,5 +37,3 @@
 
 <p>Feel free to explore and manage your contacts using this simple command-line interface!</p>
 
-</body>
-</html>
