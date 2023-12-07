@@ -1,86 +1,88 @@
 contacts = {}
 
-def exception_handling(func):
+def input_error(func):
     def wrapper(*args, **kwargs):
+        if len(args) == 2 and not args[1].isnumeric():
+            return "Incorrect number."
+        
         try:
             return func(*args, **kwargs)
         except TypeError as str_error:
             if "positional argument" in str_error.args[0]:
-                return str_error
+                if "2" in str_error.args[0]:
+                    return "Give me name and phone please"
+                elif "1" in str_error.args[0]:
+                    return "Enter user name"
+                else:
+                    return str_error.args[0]
+        
+        except IndexError as str_error:
+            return str_error.args[0]
     return wrapper
 
-@exception_handling
+
+def hello():
+    return "How can I help you?"
+
+@input_error
 def add_new_contact(name, phone):
-    if not phone.isnumeric():
-        raise TypeError("Oops. Wrong number.")
     if name in contacts:
-        raise ValueError(f"Oops. I already have a contact named \"{name.capitalize()}\"")
+        raise IndexError(f"Oops. I already have a contact named \"{name.capitalize()}\"")
     
     contacts[name] = phone
-    return f"It's all good.\nI have added a new contact with the name \"{name.capitalize()}\" and the phone number \"{phone}\""
+    return f"I have added a new contact with the name \"{name.capitalize()}\""
 
-
+@input_error
 def change_phone(name, phone):
     if not name in contacts:
-        raise Exception(f"Oops. I couldn't find {name}.")
-    if not phone.isnumeric():
-        raise ValueError("Oops. Wrong number.")
+        raise IndexError(f"Oops. I couldn't find {name.capitalize()}.")
 
     contacts[name] = phone
-    return f"That's great.\nThe phone number for contact \"{name}\" has been changed to \"{phone}\""
+    return f"The phone number for contact \"{name.capitalize()}\" has been changed to \"{phone}\""
 
-
+@input_error
 def show_phone(name):
     if not name in contacts:
-        raise Exception(f"Oops. I couldn't find {name.capitalize()}.")
+        raise IndexError(f"Oops. I couldn't find {name.capitalize()}.")
 
     return f"Name: {name.capitalize()} Phone: {contacts[name]}"
 
-
+@input_error
 def show_all():
-    text = " ".join(f"{name} {phone}\n" for name, phone in contacts.items())
-    return text
+    return "\n".join(f"{name} {phone}" for name, phone in contacts.items())
 
+
+def non_exist_command(*_):
+    return "Oops. I don't know this command yet."
 
 def main():
     commands = {
         
+        "add": add_new_contact,
+        "hello": exit,
+        "change": change_phone,
+        "phone": show_phone,
+        "show all": show_all,
+
+        "exit": exit,
+        "good bye": exit,
+        "close": exit
     }
 
 
     while True:
         user_string = input(">>> ").lower()
         
-        if user_string == "test":
-            print(test(1))
-        
-        if user_string in ["good bye", "close", "exit"]:
-            print("Good bye!")
-            exit()
-        
-        elif user_string == "hello":
-            print("How can I help you?")
-        
-        elif user_string.startswith("add"):
-            
-            func, *args = user_string.split(" ")
-            
-            print(add_new_contact(*args))
-        
-        elif user_string.startswith("change"):
-            _, name, phone = user_string.split(" ")
-            print(change_phone(name, phone))
-        
-        elif user_string.startswith("phone"):
-            _, phone = user_string.split(" ")
-            print(show_phone(phone))
-        
-        elif user_string.startswith("show all"):
-            print(show_all())
-        
+        if user_string in commands:
+            return_string = commands[user_string]()
         else:
-            print("I don't understand you")
-        
+            comand, *args = user_string.split(" ")
+
+            func_comand = commands.get(comand, non_exist_command)
+            return_string = func_comand(*args)
+            
+        print(return_string)
+                  
 
 
 if __name__ == "__main__":
