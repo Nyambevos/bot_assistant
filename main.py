@@ -1,10 +1,11 @@
 contacts = {}
 
+
 def input_error(func):
     def wrapper(*args, **kwargs):
         if len(args) == 2 and not args[1].isnumeric():
             return "Incorrect number."
-        
+
         try:
             return func(*args, **kwargs)
         except TypeError as str_error:
@@ -15,7 +16,7 @@ def input_error(func):
                     return "Enter user name"
                 else:
                     return str_error.args[0]
-        
+
         except IndexError as str_error:
             return str_error.args[0]
     return wrapper
@@ -24,28 +25,32 @@ def input_error(func):
 def hello():
     return "How can I help you?"
 
+
 @input_error
 def add_new_contact(name, phone):
     if name in contacts:
-        raise IndexError(f"Oops. I already have a contact named \"{name.capitalize()}\"")
-    
+        raise IndexError(f"I already have a contact named: {name}")
+
     contacts[name] = phone
     return f"I have added a new contact with the name \"{name.capitalize()}\""
 
+
 @input_error
 def change_phone(name, phone):
-    if not name in contacts:
+    if name not in contacts:
         raise IndexError(f"Oops. I couldn't find {name.capitalize()}.")
 
     contacts[name] = phone
-    return f"The phone number for contact \"{name.capitalize()}\" has been changed to \"{phone}\""
+    return f"The phone number for contact: {name} has been changed to: {phone}"
+
 
 @input_error
 def show_phone(name):
-    if not name in contacts:
+    if name not in contacts:
         raise IndexError(f"Oops. I couldn't find {name.capitalize()}.")
 
     return f"Name: {name.capitalize()} Phone: {contacts[name]}"
+
 
 @input_error
 def show_all():
@@ -55,9 +60,10 @@ def show_all():
 def non_exist_command(*_):
     return "Oops. I don't know this command yet."
 
+
 def main():
     commands = {
-        
+
         "add": add_new_contact,
         "hello": exit,
         "change": change_phone,
@@ -69,10 +75,9 @@ def main():
         "close": exit
     }
 
-
     while True:
         user_string = input(">>> ").lower()
-        
+
         if user_string in commands:
             return_string = commands[user_string]()
         else:
@@ -80,9 +85,8 @@ def main():
 
             func_comand = commands.get(comand, non_exist_command)
             return_string = func_comand(*args)
-            
+
         print(return_string)
-                  
 
 
 if __name__ == "__main__":
