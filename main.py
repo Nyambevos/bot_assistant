@@ -9,13 +9,18 @@ FILENAME = "contacts.bin"
 
 def input_error(func):
     def wrapper(*args, **kwargs):
-        if len(args) == 2 and not args[1].isnumeric():
-            return "Incorrect number."
-
         try:
             return func(*args, **kwargs)
-        except:
-            return ("Oops. Something went wrong.")
+        except IndexError as err:
+            print(err)
+        except TypeError as err:
+            print("Incorrect number of arguments")
+        except KeyError as err:
+            print(f"Record {err} not found")
+        except ValueError as err:
+            print(err)
+        #except:
+        #    return ("Oops. Something went wrong.")
 
     return wrapper
 
@@ -67,9 +72,13 @@ def show_all():
 @input_error
 def find(keyword):
     found_contacts = contacts.find_by_key(keyword)
-    for contact in found_contacts:
-        print(contact)
-    return "Done"
+    if found_contacts is not None:
+        for contact in found_contacts:
+            print(contact)
+        return "Done"
+    else:
+        return "No matches found"
+    
 
 def non_exist_command(*_):
     return "Oops. I don't know this command yet."

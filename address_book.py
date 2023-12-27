@@ -58,7 +58,7 @@ class Record:
         name = self.name.value
         phones = '; '.join(p.value for p in self.phones)
         birthday = self.birthday.value
-        return f"Contact name: {name}, phones: {phones}, birthday: {birthday}"
+        return f"Contact name: {name.capitalize()}, phones: {phones}, birthday: {birthday}"
 
     def add_phone(self, phone):
         self.phones.append(Phone(phone))
@@ -70,7 +70,7 @@ class Record:
         obj_old_phone = self.find_phone(old_phone)
 
         if obj_old_phone is None:
-            raise ValueError
+            raise IndexError(f"Phone number:: {old_phone}, not found")
 
         index_old_phone = self.phones.index(obj_old_phone)
 
