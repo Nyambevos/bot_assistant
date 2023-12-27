@@ -7,26 +7,26 @@ contacts = AddressBook()
 
 FILENAME = "contacts.bin"
 
+
 def input_error(func):
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
         except IndexError as err:
-            print(err)
-        except TypeError as err:
-            print("Incorrect number of arguments")
+            return err
+        except TypeError:
+            return "Incorrect number of arguments"
         except KeyError as err:
-            print(f"Record {err} not found")
+            return f"Record {err} not found"
         except ValueError as err:
-            print(err)
-        #except:
-        #    return ("Oops. Something went wrong.")
+            return err
 
     return wrapper
 
 
 def hello():
     return "How can I help you?"
+
 
 def exit():
     contacts.save_to_file(FILENAME)
@@ -48,7 +48,8 @@ def add_new_contact(name, phone):
 def change_phone(name, old_phone, new_phone):
     contacts[name].edit_phone(old_phone, new_phone)
 
-    return f"The phone number for contact: {name} has been changed to: {new_phone}"
+    return (f"The phone number for contact: {name}" +
+            f" has been changed to: {new_phone}")
 
 
 @input_error
@@ -63,11 +64,12 @@ def show_phone(name):
 @input_error
 def show_all():
     iter = contacts.iterator()
-    
+
     for contact in iter:
         print(contact[0])
 
     return "Done"
+
 
 @input_error
 def find(keyword):
@@ -78,7 +80,7 @@ def find(keyword):
         return "Done"
     else:
         return "No matches found"
-    
+
 
 def non_exist_command(*_):
     return "Oops. I don't know this command yet."
